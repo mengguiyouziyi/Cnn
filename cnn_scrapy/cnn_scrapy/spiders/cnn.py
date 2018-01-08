@@ -49,13 +49,17 @@ class MeishijieSpider(CrawlSpider):
         s = Selector(text=response.text)
         title = s.xpath('//h1/text()').extract_first().strip()
         author = s.xpath('//span[@class="metadata__byline__author"]//text()|//span[@class="byline"]//text()').extract()
-        author = ''.join(author).replace('by', '').strip() if author else ''
+        author = ''.join(author).replace('By', '').strip() if author else ''
         update_time = s.xpath('//p[@class="update-time"]/text()|//span[@class="cnnDateStamp"]/text()').extract_first()
         cat = 'technology' if 'technology' in response.url else 'politics'
-        pic = s.xpath('//div[@class="slideimg"]/img/@src').extract_first()
-        keyword = s.xpath(
-            '//div[@class="zn-body__paragraph"]//text()|//h2[@class="speakable"]/text()|//div[@id="storytext"]//text()').extract_first()
-        text = s.xpath('//div[@class="zn-body__paragraph"]//text()|//div[@id="storytext"]//text()').extract()
+        p = s.xpath(
+            '//div[@class="slideimg"]/img/@src|//img[@class="media__image"]/@src|//figure[contains(@class, "body_img")]/img/@src').extract_first()
+        p = ('http:' + p) if p and ('http:' not in p) else ''
+        # keyword = s.xpath(
+        #     '//div[@class="zn-body__paragraph"]//text()|//h2[@class="speakable"]/text()|//div[@id="storytext"]//text()').extract_first()
+        text = s.xpath(
+            '//div[@class="zn-body__paragraph"]//text()|//div[@id="storytext"]/p/text()|//div[@id="storytext"]/h2/text()').extract()
+        keyword = text[0] if text else ''
         text = '\n'.join(text) if text else ''
 
         item = CnnItem()
@@ -64,8 +68,8 @@ class MeishijieSpider(CrawlSpider):
         item['author'] = author
         item['update_time'] = update_time
         item['cat'] = cat
-        item['pic'] = pic if pic else ''
-        item['keyword'] = keyword if keyword else ''
+        item['pic'] = p
+        item['keyword'] = keyword
         item['text'] = text
 
         yield item
