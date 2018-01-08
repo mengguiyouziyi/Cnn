@@ -38,7 +38,6 @@ SCHEDULER_PERSIST = True
 ################################################
 #################################################
 
-
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
