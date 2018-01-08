@@ -44,7 +44,7 @@ from scrapy.exceptions import IgnoreRequest, CloseSpider
 
 class ProxyMiddleware(object):
     def __init__(self):
-        self.proxyServer = "http://http-cla.abuyun.com:9030"
+        self.proxyServer = "http://http-dyn.abuyun.com:9020"
         pl = [
             "H1XX369E3AGF7AQD:F2F5005CDF302D89",
         ]
