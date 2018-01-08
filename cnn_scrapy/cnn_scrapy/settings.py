@@ -116,8 +116,8 @@ USER_AGENT_CHOICES = [
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    # 'cnn_scrapy.middlewares.ProxyMiddleware': 1,
-    # 'cnn_scrapy.middlewares.RetryMiddleware': 110,
+    'cnn_scrapy.middlewares.ProxyMiddleware': 1,
+    'cnn_scrapy.middlewares.RetryMiddleware': 110,
     'cnn_scrapy.middlewares.RotateUserAgentMiddleware': 3,
     # 'cnn_scrapy.middlewares.BloomfilterMiddleware': 2,
     # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
