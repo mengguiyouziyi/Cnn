@@ -58,7 +58,7 @@ class MeishijieSpider(CrawlSpider):
         # keyword = s.xpath(
         #     '//div[@class="zn-body__paragraph"]//text()|//h2[@class="speakable"]/text()|//div[@id="storytext"]//text()').extract_first()
         text = s.xpath(
-            '//div[@class="zn-body__paragraph"]//text()|//div[@id="storytext"]/p/text()|//div[@id="storytext"]/h2/text()').extract()
+            '//div[contains(@class, "zn-body__paragraph")]//text()|//div[@id="storytext"]/p/text()|//div[@id="storytext"]/h2/text()|//div[@id="storytext"]/*[@class="speakable"]/text()').extract()
         keyword = text[0] if text else ''
         text = '\n'.join(text) if text else ''
 
