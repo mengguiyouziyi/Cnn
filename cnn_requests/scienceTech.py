@@ -43,7 +43,10 @@ for page in range(2, 20):
         imgs = ""
         if detail_html.xpath('//div[@class="l-container"]/div//img/@src'):
             imgs = detail_html.xpath('//div[@class="l-container"]/div//img/@src')[0]
-            img_res = s.get("http:" + imgs)
+            try:
+                img_res = s.get("http:" + imgs)
+            except:
+                continue
             with open(imgs.strip().split('/')[-1], 'wb') as f:
                 f.write(img_res.content)
             f.close()
