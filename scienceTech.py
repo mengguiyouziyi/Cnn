@@ -13,7 +13,7 @@ s = requests.session()
 
 for page in range(2, 20):
     url = "http://edition.cnn.com/search?size=10&q=politics&from="+str((page-1)*10)+"&page="+str(page)
-    browser = webdriver.PhantomJS()
+    browser = webdriver.PhantomJS(executable_path='/Users/menggui/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs')
     browser.get(url)
     time.sleep(2)
     list_urls = browser.find_elements_by_xpath('//div[@class="cnn-search__results-list"]//h3[@class="cnn-search__result-headline"]/a')
