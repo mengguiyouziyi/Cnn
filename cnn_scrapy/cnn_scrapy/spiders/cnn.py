@@ -35,7 +35,7 @@ class MeishijieSpider(CrawlSpider):
     }
 
     def start_requests(self):
-        url = 'http://www.cnn.com/'
+        url = 'http://cnn.com/'
         yield scrapy.Request(url)
 
     rules = (
