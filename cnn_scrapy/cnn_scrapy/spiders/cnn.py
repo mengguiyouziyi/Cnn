@@ -46,6 +46,8 @@ class MeishijieSpider(CrawlSpider):
     )
 
     def parse_item(self, response):
+        if 'It could be you, or it could be us' in response.text:
+            return
         s = Selector(text=response.text)
         title = s.xpath('//h1/text()').extract_first().strip()
         author = s.xpath('//span[@class="metadata__byline__author"]//text()|//span[@class="byline"]//text()').extract()
