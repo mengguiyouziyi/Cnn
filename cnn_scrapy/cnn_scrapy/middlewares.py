@@ -17,6 +17,7 @@ sys.path.append(father_path)
 
 import base64
 from random import choice
+from redis import StrictRedis
 from scrapy.exceptions import IgnoreRequest, CloseSpider
 
 
@@ -47,6 +48,7 @@ class ProxyMiddleware(object):
         self.proxyServer = "http://http-dyn.abuyun.com:9020"
         pl = [
             "H1XX369E3AGF7AQD:F2F5005CDF302D89",
+            "HOKRYM10F5AHIW4D:H1XX369E3AGF7AQD",
         ]
         self.proxyAuths = ["Basic " + base64.urlsafe_b64encode(bytes(p, "ascii")).decode("utf8") for p in pl]
 
@@ -56,21 +58,34 @@ class ProxyMiddleware(object):
 
 
 class RetryMiddleware(object):
+    def __init__(self, server):
+        self.server = server
+
+    def from_crawler(cls, crawler):
+        settings = crawler.settings
+        host = settings.get('REDIS_HOST')
+        port = settings.get('REDIS_PORT')
+        server = StrictRedis(host=host, port=port, db=0, decode_responses=True)
+        return cls(server)
+
     def process_response(self, request, response, spider):
-        if response.status in [429, 503]:
+        """
+        猜想：
+            request复制改属性，指纹不同，返回重新申请；
+            原request也会在重试机制中重新申请
+        :param request:
+        :param response:
+        :param spider:
+        :return:
+        """
+        if response.status in [429]:
+            if 'index.html' in request.url:
+                self.server.sadd('cnn_wrong', request.url)
             # print('wrong status: %s, retrying~~' % response.status, request.url)
             retryreq = request.copy()
-            retryreq.dont_filter = True
+            retryreq.dont_filter = True  # 告诉scrapy，此request不去重
             return retryreq
         else:
-            # url = response.url
-            # if 'doDetailSearch' in url:
-            # 	paramAn = response.xpath('//input[@id="paramAn"]/@value').extract_first()
-            # 	if not paramAn:
-            # 		print('no paramAn, retry')
-            # 		retryreq = request.copy()
-            # 		retryreq.dont_filter = True
-            # 		return retryreq
             return response
 
 

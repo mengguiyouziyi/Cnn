@@ -39,7 +39,7 @@ class MeishijieSpider(CrawlSpider):
         yield scrapy.Request(url)
 
     rules = (
-        Rule(LinkExtractor(allow=('/(technology|politics)'), deny=('index\.html'))),
+        Rule(LinkExtractor(allow=('/(technology|politics)'), deny=('index\.html', 'videos', 'fortune'))),
         Rule(LinkExtractor(
             allow=('(\d{4}-\d{2}-\d{2}/)?(technology|politics)/(\d{4}-\d{2}-\d{2}/)?[-\w]+/index\.html$')),
             callback='parse_item', follow=True),
@@ -53,7 +53,7 @@ class MeishijieSpider(CrawlSpider):
         update_time = s.xpath('//p[@class="update-time"]/text()|//span[@class="cnnDateStamp"]/text()').extract_first()
         cat = 'technology' if 'technology' in response.url else 'politics'
         p = s.xpath(
-            '//div[@class="slideimg"]/img/@src|//img[@class="media__image"]/@src|//figure[contains(@class, "body_img")]/img/@src').extract_first()
+            '//div[@class="slideimg"]/img/@src|//img[@class="media__image"]/@src|//figure[contains(@class, "body_img")]/img/@src|//div[@class="l-container"]/div//img/@src').extract_first()
         p = ('http:' + p) if p and ('http:' not in p) else ''
         # keyword = s.xpath(
         #     '//div[@class="zn-body__paragraph"]//text()|//h2[@class="speakable"]/text()|//div[@id="storytext"]//text()').extract_first()
