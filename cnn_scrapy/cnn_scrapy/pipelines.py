@@ -20,7 +20,7 @@ import pymysql
 class MysqlPipeline(object):
     def __init__(self, crawler):
         if crawler.spider.name in ['cnn', 'cnn_uncrawl']:
-            self.tab = 'cnn_v3'
+            self.tab = 'cnn'
         else:
             self.tab = 'test'
         settings = crawler.settings
