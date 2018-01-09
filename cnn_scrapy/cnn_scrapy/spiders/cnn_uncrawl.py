@@ -14,7 +14,7 @@ import scrapy
 from scrapy.spiders import Spider
 from cnn_scrapy.items import CnnItem
 from scrapy.exceptions import CloseSpider
-from cnn_scrapy.cnn_scrapy.util.info import server
+from util.info import server
 
 
 class MeishijieSpider(Spider):
