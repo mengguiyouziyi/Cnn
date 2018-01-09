@@ -19,9 +19,8 @@ import pymysql
 
 class MysqlPipeline(object):
     def __init__(self, crawler):
-        print(crawler.spider.name)
         if crawler.spider.name in ['cnn', 'cnn_uncrawl']:
-            self.tab = 'cnn'
+            self.tab = 'cnn_v3'
         else:
             self.tab = 'test'
         settings = crawler.settings
@@ -33,7 +32,7 @@ class MysqlPipeline(object):
             passwd=settings['MYSQL_PASSWD'],
             charset='utf8',
             cursorclass=pymysql.cursors.DictCursor,
-            use_unicode=False,
+            # use_unicode=False,
         )
         self.conn = pymysql.connect(**dbparams)
         self.cursor = self.conn.cursor()
@@ -62,7 +61,10 @@ class MysqlPipeline(object):
             exit(1)
         results = self.cursor.fetchall()
         col_str = results[0]['group_concat(column_name)']
+        print(col_str)
+        print(type(col_str))
         col_list = col_str.split(',')
+        print(col_list)
         return col_list
 
     def _handle_str(self, num):
