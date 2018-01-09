@@ -61,10 +61,7 @@ class MysqlPipeline(object):
             exit(1)
         results = self.cursor.fetchall()
         col_str = results[0]['group_concat(column_name)']
-        print(col_str)
-        print(type(col_str))
         col_list = col_str.split(',')
-        print(col_list)
         return col_list
 
     def _handle_str(self, num):
