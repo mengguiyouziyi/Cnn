@@ -14,23 +14,27 @@ path = dirname(os.path.abspath(dirname(__file__)))
 sys.path.append(path)
 sys.path.append(base_path)
 sys.path.append(father_path)
-import logging
-from util.info import etl
-
-logging.log(logging.DEBUG, msg=str(etl.get_host_info()))
+import pymysql
 
 
 class MysqlPipeline(object):
     def __init__(self, crawler):
-        self.crawler = crawler
-        self.spider = self.crawler.spider
-        # 如果有其他item和表结构，需要打开这个注释，并更改spider名字和表名
-        if self.spider.name == 'cnn':
+        if crawler.spider.name == 'cnn':
             self.tab = 'cnn'
         else:
             self.tab = 'test'
-        # self.rc = StrictRedisCluster(startup_nodes=startup_nodes, decode_responses=True)
-        self.conn = etl
+        settings = crawler.settings
+        dbparams = dict(
+            host=settings['MYSQL_HOST'],
+            port=settings['MYSQL_PORT'],
+            db=settings['MYSQL_DBNAME'],
+            user=settings['MYSQL_USER'],
+            passwd=settings['MYSQL_PASSWD'],
+            charset='utf8',
+            cursorclass=pymysql.cursors.DictCursor,
+            use_unicode=False,
+        )
+        self.conn = pymysql.connect(**dbparams)
         self.cursor = self.conn.cursor()
         self.col_list = self._get_column(self.tab)[1:-1]
         self.col_str = ','.join(self.col_list)
@@ -73,7 +77,6 @@ class MysqlPipeline(object):
         return x
 
     def process_item(self, item, spider):
-        # print(item)
         sql = """insert into {tab} ({col}) VALUES ({val})""".format(tab=self.tab, col=self.col_str, val=self.val_str)
         args = [item[i] for i in self.col_list]
         try:
@@ -81,9 +84,6 @@ class MysqlPipeline(object):
             self.conn.commit()
             print(item['title'])
         except Exception as e:
-            # cnipr_comp = str(item['origin_id']) + '~' + str(item['only_id']) + '~' + str(
-            # 	item['comp_full_name']) + '~' + str(item['cursorPage'])
-            # self.rc.lpush('cnipr_fail', cnipr_comp)
             print(e)
             print('mysql error，链接为：{}'.format(item['url']))
             self.crawler.engine.close_spider(spider, 'mysql error')

@@ -47,7 +47,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 2
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -63,9 +63,6 @@ LOG_STDOUT = True
 RETRY_TIMES = 5
 RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
 # REDIRECT_ENABLED = False
-
-# Disable Telnet Console (enabled by default)
-# TELNETCONSOLE_ENABLED = False
 
 
 USER_AGENT_CHOICES = [
@@ -135,3 +132,19 @@ ITEM_PIPELINES = {
     'cnn_scrapy.pipelines.MysqlPipeline': 999,
     # 'cnn_scrapy.pipelines.DuplicatesPipeline': 111,
 }
+
+# Mysql数据库的配置信息
+MYSQL_HOST = '10.142.98.91'
+MYSQL_DBNAME = 'spider'  # 数据库名字，请修改
+MYSQL_USER = 'spider'  # 数据库账号，请修改
+MYSQL_PASSWD = 'chenguang'  # 数据库密码，请修改
+MYSQL_PORT = 3306  # 数据库端口，在dbhelper中使用
+
+REDIS_CLUSTER_NODES = [
+    {"host": "10.142.97.92", "port": "7000"},
+    {"host": "10.142.97.92", "port": "7001"},
+    {"host": "10.142.97.92", "port": "7002"},
+    {"host": "10.142.97.92", "port": "7003"},
+    {"host": "10.142.97.92", "port": "7004"},
+    {"host": "10.142.97.92", "port": "7005"}
+]

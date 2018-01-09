@@ -39,9 +39,9 @@ class MeishijieSpider(CrawlSpider):
         yield scrapy.Request(url)
 
     rules = (
-        Rule(LinkExtractor(allow=('/(technology|politics)'), deny=('index\.html', 'videos', 'fortune', 'interactive'))),
+        Rule(LinkExtractor(allow=('technology|politics'))),
         Rule(LinkExtractor(
-            allow=('(\d{4}-\d{2}-\d{2}/)?(technology|politics)/(\d{4}-\d{2}-\d{2}/)?[-\w]+/index\.html$'), deny=('videos', 'fortune', 'interactive')),
+            allow=('(technology|politics).*index\.html$'), deny=('videos', 'fortune', 'interactive')),
             callback='parse_item', follow=True),
     )
 
