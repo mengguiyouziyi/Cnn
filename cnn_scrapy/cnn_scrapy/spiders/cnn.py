@@ -41,7 +41,7 @@ class MeishijieSpider(CrawlSpider):
     rules = (
         Rule(LinkExtractor(allow=('/(technology|politics)'), deny=('index\.html', 'videos', 'fortune', 'interactive'))),
         Rule(LinkExtractor(
-            allow=('(\d{4}-\d{2}-\d{2}/)?(technology|politics)/(\d{4}-\d{2}-\d{2}/)?[-\w]+/index\.html$')),
+            allow=('(\d{4}-\d{2}-\d{2}/)?(technology|politics)/(\d{4}-\d{2}-\d{2}/)?[-\w]+/index\.html$'), deny=('videos', 'fortune', 'interactive')),
             callback='parse_item', follow=True),
     )
 
@@ -50,16 +50,16 @@ class MeishijieSpider(CrawlSpider):
             return
         s = Selector(text=response.text)
         title = s.xpath('//h1/text()').extract_first()
-        date = s.xpath('//meta[@name="date"]/@content').extract_first()
         t = s.xpath('//title/text()').extract_first()
-        keyword = s.xpath('//meta[@name="news_keywords"]/@content').extract_first()
-        author = s.xpath('//meta[@name="author"]/@content').extract_first()
-        cat = s.xpath('//meta[@name="section"]/@content').extract_first()
+        date = s.xpath('//meta[@name="date"]/@content').extract_first()
+        d = s.xpath('//p[@class="update-time"]/text()|//span[@class="cnnDateStamp"]/text()').extract_first()
 
-        # author = s.xpath('//span[@class="metadata__byline__author"]//text()|//span[@class="byline"]//text()').extract()
-        # author = ''.join(author).replace('By', '').strip() if author else ''
-        # update_time = s.xpath('//p[@class="update-time"]/text()|//span[@class="cnnDateStamp"]/text()').extract_first()
-        # cat = 'technology' if 'technology' in response.url else 'politics'
+        keyword = s.xpath('//meta[@name="news_keywords"]/@content|//meta[@name="keywords"]/@content').extract_first()
+        author = s.xpath('//meta[@name="author"]/@content').extract_first()
+        a = s.xpath('//span[@class="metadata__byline__author"]//text()|//span[@class="byline"]//text()').extract()
+        a = ''.join(a).replace('By', '').strip() if a else ''
+        cat = s.xpath('//meta[@name="section"]/@content').extract_first()
+        c = 'technology' if 'technology' in response.url else 'politics'
         p = s.xpath(
             '//div[@class="slideimg"]/img/@src|//img[@class="media__image"]/@src|//figure[contains(@class, "body_img")]/img/@src|//div[@class="l-container"]//img/@src').extract_first()
         pic = s.xpath('//img/@src').extract_first()
@@ -75,9 +75,9 @@ class MeishijieSpider(CrawlSpider):
         item = CnnItem()
         item['url'] = response.url
         item['title'] = title if title else t
-        item['author'] = author
-        item['update_time'] = date
-        item['cat'] = cat
+        item['author'] = author if author else a
+        item['update_time'] = date if date else d
+        item['cat'] = cat if cat else c
         item['pic'] = p
         item['keyword'] = keyword
         item['text'] = text
