@@ -49,11 +49,17 @@ class MeishijieSpider(CrawlSpider):
         if 'It could be you, or it could be us' in response.text:
             return
         s = Selector(text=response.text)
-        title = s.xpath('//h1/text()').extract_first().strip()
-        author = s.xpath('//span[@class="metadata__byline__author"]//text()|//span[@class="byline"]//text()').extract()
-        author = ''.join(author).replace('By', '').strip() if author else ''
-        update_time = s.xpath('//p[@class="update-time"]/text()|//span[@class="cnnDateStamp"]/text()').extract_first()
-        cat = 'technology' if 'technology' in response.url else 'politics'
+        # title = s.xpath('//h1/text()').extract_first()
+        date = s.xpath('//meta[@name="date"]/text()').extract_first()
+        t = s.xpath('//title/text()').extract_first()
+        keyword = s.xpath('//meta[@name="news_keywords"]/text()').extract_first()
+        author = s.xpath('//meta[@name="author"]/text()').extract_first()
+        cat = s.xpath('//meta[@name="section"]/text()').extract_first()
+
+        # author = s.xpath('//span[@class="metadata__byline__author"]//text()|//span[@class="byline"]//text()').extract()
+        # author = ''.join(author).replace('By', '').strip() if author else ''
+        # update_time = s.xpath('//p[@class="update-time"]/text()|//span[@class="cnnDateStamp"]/text()').extract_first()
+        # cat = 'technology' if 'technology' in response.url else 'politics'
         p = s.xpath(
             '//div[@class="slideimg"]/img/@src|//img[@class="media__image"]/@src|//figure[contains(@class, "body_img")]/img/@src|//div[@class="l-container"]/div//img/@src').extract_first()
         p = ('http:' + p) if p and ('http:' not in p) else ''
@@ -61,14 +67,14 @@ class MeishijieSpider(CrawlSpider):
         #     '//div[@class="zn-body__paragraph"]//text()|//h2[@class="speakable"]/text()|//div[@id="storytext"]//text()').extract_first()
         text = s.xpath(
             '//div[contains(@class, "zn-body__paragraph")]//text()|//div[@id="storytext"]/p/text()|//div[@id="storytext"]/h2/text()|//div[@id="storytext"]/*[@class="speakable"]/text()').extract()
-        keyword = text[0] if text else ''
+        # keyword = text[0] if text else ''
         text = '\n'.join(text) if text else ''
 
         item = CnnItem()
         item['url'] = response.url
-        item['title'] = title
+        item['title'] = t
         item['author'] = author
-        item['update_time'] = update_time
+        item['update_time'] = date
         item['cat'] = cat
         item['pic'] = p
         item['keyword'] = keyword

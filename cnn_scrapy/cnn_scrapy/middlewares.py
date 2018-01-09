@@ -48,7 +48,7 @@ class ProxyMiddleware(object):
         self.proxyServer = "http://http-dyn.abuyun.com:9020"
         pl = [
             "H1XX369E3AGF7AQD:F2F5005CDF302D89",
-            # "HOKRYM10F5AHIW4D:H1XX369E3AGF7AQD",
+            "HOKRYM10F5AHIW4D:DCF22DAF1A9040F5",
         ]
         self.proxyAuths = ["Basic " + base64.urlsafe_b64encode(bytes(p, "ascii")).decode("utf8") for p in pl]
 

@@ -61,6 +61,7 @@ LOG_LEVEL = 'DEBUG'
 LOG_STDOUT = True
 
 RETRY_TIMES = 5
+RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
 # REDIRECT_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
