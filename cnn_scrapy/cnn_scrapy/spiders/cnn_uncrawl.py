@@ -9,11 +9,12 @@ path = dirname(os.path.abspath(dirname(__file__)))
 sys.path.append(path)
 sys.path.append(base_path)
 sys.path.append(father_path)
-import scrapy
 import json
-import codecs
+import scrapy
 from scrapy.spiders import Spider
 from cnn_scrapy.items import CnnItem
+from scrapy.exceptions import CloseSpider
+from cnn_scrapy.util.info import server
 
 
 class MeishijieSpider(Spider):
@@ -26,25 +27,19 @@ class MeishijieSpider(Spider):
             'accept-language': "zh-CN,zh;q=0.9,en;q=0.8",
             'origin': "http://edition.cnn.com",
             'referer': "http://edition.cnn.com/search/?size=10&q=technology&from=30&page=4",
-            'user-agent': "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36",
             'cache-control': "no-cache",
-            'postman-token': "4d85af38-befa-3602-b49e-32bf9f803900"
         },
-        'DOWNLOAD_DELAY': 1
+        'DOWNLOAD_DELAY': 2
     }
 
+    def __init__(self):
+        self.server = server
+
     def start_requests(self):
-        tech = ['https://search.api.cnn.io/content?size=100&q=technology&from={f}&page={p}'.format(f=100 * (i - 1), p=i)
-                for i in range(1, 300)]
-        for url in tech:
-            yield scrapy.Request(url)
-        poli = ['https://search.api.cnn.io/content?size=100&q=politics&from={f}&page={p}'.format(f=100 * (i - 1), p=i)
-                for i in range(1, 781)]
-        for url in poli:
-            yield scrapy.Request(url)
-        us = ['https://search.api.cnn.io/content?size=100&q=us&from={f}&page={p}'.format(f=100 * (i - 1), p=i)
-              for i in range(1, 1567)]
-        for url in us:
+        while True:
+            url = self.server.spop('cnn_uncrawl:myrequests')
+            if not url:
+                raise CloseSpider('no datas')
             yield scrapy.Request(url)
 
     def parse(self, response):
@@ -55,6 +50,9 @@ class MeishijieSpider(Spider):
                 continue
             item = CnnItem()
             url = result.get('url', '')
+            if server.sismember('cnn_uncrawl:myitem', url):
+                continue
+            self.server.sadd('cnn_uncrawl:myitem', url)
             if 'technology' in url:
                 item['cat'] = 'technology'
             elif 'politics' in url:

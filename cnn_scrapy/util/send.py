@@ -3,10 +3,10 @@ from info import etl
 
 
 class Send(object):
-    def __init__(self, conn=etl, redis_key='meishij:dupefilter'):
+    def __init__(self, conn=etl, redis_key='cnn_uncrawl:dupefilter'):
         self.conn = conn
         self.cursor = self.conn.cursor()
-        self.r = redis.StrictRedis(host='10.142.97.92')
+        self.r = redis.StrictRedis(host='10.142.97.92', decode_responses=True)
         self.key = redis_key
         self.sha = hashlib.sha1()
 
