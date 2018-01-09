@@ -77,9 +77,9 @@ class RetryMiddleware(object):
         :param spider:
         :return:
         """
-        if response.status in [429]:
-            if 'index.html' in request.url:
-                self.server.sadd('cnn:wrong', request.url)
+        retries = request.meta.get('retry_times', 0)
+        if retries >= 5 and response.status in [429, 503] and 'index.html' in request.url:
+            self.server.sadd('cnn:wrong', request.url)
             # print('wrong status: %s, retrying~~' % response.status, request.url)
             # retryreq = request.copy()
             # retryreq.dont_filter = True  # 告诉scrapy，此request不去重
