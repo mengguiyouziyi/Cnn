@@ -61,6 +61,7 @@ class RetryMiddleware(object):
     def __init__(self, server):
         self.server = server
 
+    @classmethod
     def from_crawler(cls, crawler):
         settings = crawler.settings
         host = settings.get('REDIS_HOST')
