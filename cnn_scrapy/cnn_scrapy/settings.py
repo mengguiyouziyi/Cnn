@@ -58,9 +58,9 @@ COOKIES_DEBUG = True
 
 # DEBUG INFO WARNING ERROR CRITICAL
 LOG_LEVEL = 'DEBUG'
-
 LOG_STDOUT = True
 
+RETRY_TIMES = 5
 # REDIRECT_ENABLED = False
 
 # Disable Telnet Console (enabled by default)

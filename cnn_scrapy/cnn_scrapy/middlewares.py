@@ -48,7 +48,7 @@ class ProxyMiddleware(object):
         self.proxyServer = "http://http-dyn.abuyun.com:9020"
         pl = [
             "H1XX369E3AGF7AQD:F2F5005CDF302D89",
-            "HOKRYM10F5AHIW4D:H1XX369E3AGF7AQD",
+            # "HOKRYM10F5AHIW4D:H1XX369E3AGF7AQD",
         ]
         self.proxyAuths = ["Basic " + base64.urlsafe_b64encode(bytes(p, "ascii")).decode("utf8") for p in pl]
 
@@ -58,16 +58,14 @@ class ProxyMiddleware(object):
 
 
 class RetryMiddleware(object):
-    def __init__(self, server):
-        self.server = server
+    def __init__(self, settings):
+        host = settings.get('REDIS_HOST')
+        port = settings.get('REDIS_PORT')
+        self.server = StrictRedis(host=host, port=port, db=0, decode_responses=True)
 
     @classmethod
     def from_crawler(cls, crawler):
-        settings = crawler.settings
-        host = settings.get('REDIS_HOST')
-        port = settings.get('REDIS_PORT')
-        server = StrictRedis(host=host, port=port, db=0, decode_responses=True)
-        return cls(server)
+        return cls(crawler.settings)
 
     def process_response(self, request, response, spider):
         """
@@ -81,11 +79,12 @@ class RetryMiddleware(object):
         """
         if response.status in [429]:
             if 'index.html' in request.url:
-                self.server.sadd('cnn_wrong', request.url)
+                self.server.sadd('cnn:wrong', request.url)
             # print('wrong status: %s, retrying~~' % response.status, request.url)
-            retryreq = request.copy()
-            retryreq.dont_filter = True  # 告诉scrapy，此request不去重
-            return retryreq
+            # retryreq = request.copy()
+            # retryreq.dont_filter = True  # 告诉scrapy，此request不去重
+            # return retryreq
+            return request
         else:
             return response
 
