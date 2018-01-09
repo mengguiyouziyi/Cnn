@@ -19,7 +19,8 @@ import pymysql
 
 class MysqlPipeline(object):
     def __init__(self, crawler):
-        if crawler.spider.name == 'cnn':
+        print(crawler.spider.name)
+        if crawler.spider.name in ['cnn', 'cnn_uncrawl']:
             self.tab = 'cnn'
         else:
             self.tab = 'test'
@@ -36,7 +37,7 @@ class MysqlPipeline(object):
         )
         self.conn = pymysql.connect(**dbparams)
         self.cursor = self.conn.cursor()
-        self.col_list = self._get_column(self.tab)[1:-1]
+        self.col_list = self._get_column()[1:-1]
         self.col_str = ','.join(self.col_list)
         self.val_str = self._handle_str(len(self.col_list))
 
@@ -44,7 +45,7 @@ class MysqlPipeline(object):
     def from_crawler(cls, crawler):
         return cls(crawler)
 
-    def _get_column(self, tab):
+    def _get_column(self):
         """
         获取mysql表 字段字符串
         :param con:
