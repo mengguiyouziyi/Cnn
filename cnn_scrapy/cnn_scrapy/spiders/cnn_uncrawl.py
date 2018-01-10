@@ -11,10 +11,10 @@ sys.path.append(base_path)
 sys.path.append(father_path)
 import json
 import scrapy
+from redis import StrictRedis
 from scrapy.spiders import Spider
 from cnn_scrapy.items import CnnItem
 from scrapy.exceptions import CloseSpider
-from util.info import server
 
 
 class MeishijieSpider(Spider):
@@ -33,7 +33,7 @@ class MeishijieSpider(Spider):
     }
 
     def __init__(self):
-        self.server = server
+        self.server = StrictRedis(host=self.settings.get('REDIS_HOST'), decode_responses=True)
 
     def start_requests(self):
         while True:
@@ -50,7 +50,7 @@ class MeishijieSpider(Spider):
                 continue
             item = CnnItem()
             url = result.get('url', '')
-            if server.sismember('cnn_uncrawl:myitem', url):
+            if self.server.sismember('cnn_uncrawl:myitem', url):
                 continue
             self.server.sadd('cnn_uncrawl:myitem', url)
             if 'technology' in url:
